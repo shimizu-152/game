@@ -9,7 +9,7 @@
       AFRAME.registerComponent("my-mouse", {
         init: function () {
           this.el.addEventListener("click", function (evt) {
-            if (this.getAttribute("color") === "green") {
+            if (this.getAttribute("color") === "red") {
               this.setAttribute("color", "blue");
             } else {
               this.setAttribute("color", "red");
