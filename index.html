@@ -1,237 +1,112 @@
 <!DOCTYPE html>
+<!-- https://zenn.dev/dami/articles/1456b68cd465aa -->
+
 <html>
-  <!--https://github.com/TakashiYoshinaga/Oculus-Quest-Interaction-Sample-->
   <head>
-    <meta charset="utf-8" />
-    <title>racket ball Demo</title>
-    <meta name="description" content="Oculus Quest Demo" />
+    <meta charset="UTF-8" />
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.8thwall.com/web/aframe/ammo.wasm.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script>
   </head>
-  <script>
-    AFRAME.registerComponent("ammo-restitution", {
-      schema: { default: 0.9 },
-      init() {
-        const el = this.el;
-        const restitution = this.data; //引数
-        el.addEventListener("body-loaded", function () {
-          el.body.setRestitution(restitution);
-        });
-      }
-    });
-
-    AFRAME.registerComponent("input-listen", {
-      init: function () {
-        //Called when trigger of ctrlL is pressed
-        this.el.addEventListener("triggerdown", function (e) {
-          let txt = document.getElementById("txt");
-          //txt.setAttribute("value", "triggerdown");
-
-          //Aqurire all ball entities which are instantiated in a-scene
-          var els = document.querySelectorAll(".ball");
-
-          //Destroy all ball entities
-          for (var i = 0; i < els.length; i++) {
-            els[i].parentNode.removeChild(els[i]);
-          }
-
-          //"this" reffers ctlL in this function
-          var point = new THREE.Vector3();
-          this.object3D.getWorldPosition(point);
-
-          //Creating ball entity.
-          var ball = document.createElement("a-sphere");
-          ball.setAttribute(
-            "ammo-body",
-            "type: dynamic; mass:4; gravity: 0 -4 0"
-          );
-          ball.setAttribute("ammo-shape", "type: sphere");
-          //ball.setAttribute("ammo-restitution", "0.9");　効かない
-          ball.setAttribute("class", "ball");
-          ball.setAttribute("radius", "0.2");
-          ball.setAttribute("scale", "1 1 1");
-          ball.setAttribute("position", point);
-          ball.setAttribute("color", "#FF0000");
-
-          //Getting raycaster which was attached to ctrlL
-          var dir = this.getAttribute("raycaster").direction;
-
-          //Setting shoot dierction and speed
-          var force = new THREE.Vector3(dir.x, dir.y, dir.z);
-          force.multiplyScalar(100);
-          ball.force = this.object3D.localToWorld(force);
-
-          //Instantiate ball entity in a-scene
-          var scene = document.querySelector("a-scene");
-          scene.appendChild(ball);
-
-          //shoot "ball" after physics information getting ready.
-          ball.addEventListener("body-loaded", function (e) {
-            //"this" reffers ball entity in this function
-            //txt.setAttribute("value", "body-loaded");
-
-            this.body.setRestitution(0.9); //必要！
-
-            var p = this.object3D.position;
-            //this.velocity was calculated before this function is called.
-            var f = this.force;
-
-            let af = new Ammo.btVector3(f.x, f.y, f.z);
-            this.body.applyCentralImpulse(af);
-          });
-        });
-      },
-      //called evry frame.
-      tick: function () {}
-    });
-  </script>
-
   <body>
-    <a-scene physics="driver: ammo; debug: false;  ">
+    <script>
+      //https://zenn.dev/dami/articles/c94a922c5c9de1
+      AFRAME.registerComponent("collider", {
+        init: function () {
+          const el = this.el;
+          el.addEventListener("collidestart", function () {
+            console.log("衝突");
+            el.setAttribute("color", "red");
+          });
+        }
+      });
+
+      AFRAME.registerComponent("vr-controller", {
+        //called once
+        init: function () {
+          let txt = document.getElementById("txt");
+          this.el.addEventListener("raycaster-intersection", function (e) {
+            let selected = e.detail.els[0];
+            //txt.setAttribute("value", "Raycaster intersection");
+            txt.setAttribute("value", selected.getAttribute("id"));
+            //haptics feedback
+            document.querySelector("#ctlR").components.haptics.pulse(0.5, 150);
+            document.querySelector("#ctlL").components.haptics.pulse(0.5, 150);
+          });
+          this.el.addEventListener("raycaster-intersection-cleared", function (
+            e
+          ) {
+            txt.setAttribute("value", "");
+          });
+        }, //カンマが必要！
+        //called evry frame
+        tick: function () {}
+      });
+    </script>
+
+    <a-scene
+      vr-mode-ui="enabled:true"
+      physics="driver: ammo; debug: false; debugDrawMode: 1;"
+    >
       <a-box
+        id="box1"
+        class="collidable"
+        position="-1 0.5 -1"
         ammo-body="type: static"
         ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="0 -1.5 0"
+        color="yellow"
+      ></a-box>
+      <!-- dynamic -->
+      <a-box
+        id="box2"
+        class="collidable"
+        ammo-body="type: static"
+        ammo-shape="type: box"
+        position="-1.5 3 -1.6"
+        color="green"
+      ></a-box>
+
+      <!-- 床 -->
+      <a-plane
+        ammo-body="type: static"
+        ammo-shape="type: box"
+        position="0 0 0"
         rotation="-90 0 0"
-        width="10"
-        height="18"
-        depth="1"
-        color="#80807a"
-        src="back.png"
-      >
-      </a-box>
-      <a-box
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="0 5 0"
-        rotation="90 0 0"
-        width="10"
-        height="18"
-        depth="1"
-        color="#c9c9af"
-        src="back.png"
-      >
-      </a-box>
-      <a-box
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="0 1.8 -9"
-        rotation="0 0 0"
-        width="10"
-        height="6.7"
-        depth="1"
-        color="#c9c9af"
-        src="back.png"
-      >
-      </a-box>
-      <a-box
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="0 1.8 9"
-        rotation="0 180 0"
-        width="10"
-        height="6.7"
-        depth="1"
-        color="#c9c9af"
-        src="back.png"
-      >
-      </a-box>
-      <a-box
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="5 1.8 0"
-        rotation="0 -90 0"
-        width="18"
-        height="6.7"
-        depth="1"
-        color="#c9c9af"
-        src="back.png"
-      >
-      </a-box>
-      <a-box
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="-5 1.8 0"
-        rotation="0 90 0"
-        width="18"
-        height="6.7"
-        depth="1"
-        color="#c9c9af"
-        src="back.png"
-      >
-      </a-box>
+        scale="5 8 1"
+        color="blue"
+      ></a-plane>
 
-      <a-entity id="cameraRig">
-        <a-entity
-          id="head"
-          camera
-          wasd-controls
-          look-controls
-          position="0 1.8 0"
-        >
-        </a-entity>
+      <!-- コントローラー -->
+      <a-entity
+        id="ctlL"
+        laser-controls="hand: left"
+        raycaster="lineColor: red; objects: .collidable; far: 10"
+        haptics
+        vr-controller
+      ></a-entity>
+      <a-entity
+        id="ctlR"
+        laser-controls="hand: right"
+        raycaster="lineColor: red; objects: .collidable; far: 10"
+        haptics
+        vr-controller
+      ></a-entity>
 
-        <a-entity
-          id="ctlL"
-          raycaster="objects: .collidable; far:4;"
-          oculus-touch-controls="hand: left"
-          input-listen
-        >
-          <a-sphere
-            radius="0.01"
-            position="0 0 -1.2"
-            color="#FFFFFF"
-          ></a-sphere>
-          <a-text
-            id="txt"
-            value="Press ctrlL trigger!"
-            position="0 0 -1.3"
-            scale="0.3 0.3 0.3"
-            align="center"
-            color="#0000FF"
-          ></a-text>
-        </a-entity>
-
-        <a-entity
-          id="ctlR"
-          raycaster="objects: .collidable; far:4;"
-          oculus-touch-controls="hand: right"
-        >
-          <a-box
-            class="collidable"
-            ammo-body="type: static"
-            ammo-shape="type: box"
-            ammo-restitution="0.9"
-            position="0 0 -0.2"
-            rotation="0 0 0"
-            width="0.05"
-            height="0.05"
-            depth="0.3"
-            color="#2b3a3d"
-            shadow
-          ></a-box>
-          <a-cylinder
-            class="collidable"
-            ammo-body="type: static"
-            ammo-shape="type: cylinder"
-            ammo-restitution="0.9"
-            color="#060"
-            radius=".3"
-            height="0.1"
-            depth="0.2"
-            position="0 0 -0.65"
-            rotation="20 0 90"
-            shadow
-          ></a-cylinder>
-        </a-entity>
+      <!-- カメラ -->
+      <a-entity position="0 1 10" rotation="0 0 0">
+        <a-camera position="0 0 0"></a-camera>
       </a-entity>
+
+      <!-- テキスト表示 -->
+      <a-text
+        id="txt"
+        value="Move controllers!!"
+        position="0 -2 -2"
+        scale="2 2 2"
+        align="center"
+        color="#AA00FF"
+      ></a-text>
     </a-scene>
   </body>
 </html>
