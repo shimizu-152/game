@@ -1,60 +1,21 @@
-<html>
-  <head>
-    <title>VRgame</title>
-    <meta charset="UTF-8" />
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-  </head>
-
-<script>
- 
- //静的作成したオブジェクトを消す
- AFRAME.registerComponent("kesu", {
-      init: function () {
-        this.el.addEventListener("click", function (e) {
-          this.remove(); //オブジェクトを削除する
-        });
-      }
-    });
-
-//動的作成したオブジェクトを消す
-let make_obj=function(){
-    var scene = document.querySelector('a-scene');
-    var cylinder = document.createElement('a-cylinder');
-    cylinder.setAttribute('color', '#FF9500');
-    cylinder.setAttribute('height', '2.5');
-    cylinder.setAttribute('radius', '0.2');
-    cylinder.setAttribute('position', '-1 0  -3');
-
-    //cylinder.setAttribute('kesu');
-    cylinder.addEventListener("click", function (e) {
-        this.remove(); //オブジェクトを削除する
-    });
-
-    scene.appendChild(cylinder);
-}
-
-
-//document.addEventListener("keydown", make_obj);
-window.onload = function() {
-  make_obj();
-}
-
-</script>
-
+<!DOCTYPE html>
+<head>
+  <title>Most Basic Super-Hands Example</title>
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.misc.min.js"></script>
+  <script src="https://rawgit.com/wmurphyrd/aframe-super-hands-component/master/dist/super-hands.js"></script>
+</head>
 
 <body>
-
-  <a-scene background="color: #FAFAFA">
-    <a-entity camera look-controls>
-          <a-cursor></a-cursor>
-          <a-entity cursor="rayOrigin: mouse"></a-entity>
+  <a-scene>
+    <a-assets></a-assets>
+    <a-entity>
+      <a-camera></a-camera>
+      <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: left"></a-entity>
+      <a-entity sphere-collider="objects: a-box" super-hands hand-controls="hand: right"></a-entity>
     </a-entity>
-    <a-box kesu position="0 0 -3" height="2.5" color="#4CC3D9"></a-box>
-    
-    <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#7BC8A4" shadow></a-plane>
-
+    <!-- hover & drag-drop won't have any obvious effect without some additional event handlers or components. See the examples page for more -->
+    <a-box hoverable grabbable stretchable draggable dropppable color="blue" position="-1 0 -1"></a-box>
+    <a-box hoverable grabbable stretchable draggable dropppable color="blue" position="1 0 -0.5"></a-box>
   </a-scene>
 </body>
-  
-  </body>
-</html>
