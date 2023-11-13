@@ -11,17 +11,6 @@
   </head>
   <body>
     <script>
-      //https://zenn.dev/dami/articles/c94a922c5c9de1
-      AFRAME.registerComponent("collider", {
-        init: function () {
-          const el = this.el;
-          el.addEventListener("collidestart", function () {
-            console.log("衝突");
-            el.setAttribute("color", "red");
-          });
-        }
-      });
-
       AFRAME.registerComponent("vr-controller", {
         //called once
         init: function () {
@@ -32,7 +21,6 @@
             txt.setAttribute("value", selected.getAttribute("id"));
             //haptics feedback
             document.querySelector("#ctlR").components.haptics.pulse(0.5, 150);
-            document.querySelector("#ctlL").components.haptics.pulse(0.5, 150);
           });
           this.el.addEventListener("raycaster-intersection-cleared", function (
             e
@@ -49,17 +37,9 @@
       vr-mode-ui="enabled:true"
       physics="driver: ammo; debug: false; debugDrawMode: 1;"
     >
+      <!-- 箱 -->
       <a-box
-        id="box1"
-        class="collidable"
-        position="-1 0.5 -1"
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        color="yellow"
-      ></a-box>
-      <!-- dynamic -->
-      <a-box
-        id="box2"
+        id="box-hit"
         class="collidable"
         ammo-body="type: static"
         ammo-shape="type: box"
@@ -78,20 +58,20 @@
       ></a-plane>
 
       <!-- コントローラー -->
-      <a-entity
-        id="ctlL"
-        laser-controls="hand: left"
-        raycaster="lineColor: red; objects: .collidable; far: 10"
-        haptics
-        vr-controller
-      ></a-entity>
+
       <a-entity
         id="ctlR"
         laser-controls="hand: right"
         raycaster="lineColor: red; objects: .collidable; far: 10"
         haptics
         vr-controller
-      ></a-entity>
+      >
+        <a-gltf-model
+          src="racket.glb"
+          position="0 0 0"
+          rotation="-90 0 0"
+        ></a-gltf-model>
+      </a-entity>
 
       <!-- カメラ -->
       <a-entity position="0 1 10" rotation="0 0 0">
