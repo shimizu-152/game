@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- https://zenn.dev/dami/articles/1456b68cd465aa -->
+
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.8thwall.com/web/aframe/ammo.wasm.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+    <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script>
+  </head>
+  <body>
+    <script>
+      AFRAME.registerComponent("vr-controller", {
+        //called once
+        init: function () {
+          let txt = document.getElementById("txt");
+          this.el.addEventListener("raycaster-intersection", function (e) {
+            let selected = e.detail.els[0];
+            //txt.setAttribute("value", "Raycaster intersection");
+            txt.setAttribute("value", selected.getAttribute("id"));
+            //haptics feedback
+            document.querySelector("#ctlR").components.haptics.pulse(0.5, 150);
+          });
+          this.el.addEventListener("raycaster-intersection-cleared", function (
+            e
+          ) {
+            txt.setAttribute("value", "");
+          });
+        }, //カンマが必要！
+        //called evry frame
+        tick: function () {}
+      });
+    </script>
+
+    <a-scene
+      vr-mode-ui="enabled:true"
+      physics="driver: ammo; debug: false; debugDrawMode: 1;"
+    >
+      <!-- 箱 -->
+      <a-box
+        id="box-hit"
+        class="collidable"
+        ammo-body="type: static"
+        ammo-shape="type: box"
+        position="-1.5 3 -1.6"
+        color="green"
+      ></a-box>
+
+      <!-- 床 -->
+      <a-plane
+        ammo-body="type: static"
+        ammo-shape="type: box"
+        position="0 0 0"
+        rotation="-90 0 0"
+        scale="5 8 1"
+        color="blue"
+      ></a-plane>
+
+      <!-- コントローラー -->
+
+      <a-entity
+        id="ctlR"
+        laser-controls="hand: right"
+        raycaster="lineColor: red; objects: .collidable; far: 10"
+        haptics
+        vr-controller
+      >
+        <a-gltf-model
+          src="racket.glb"
+          position="0 0 0"
+          rotation="-90 0 0"
+        ></a-gltf-model>
+      </a-entity>
+
+      <!-- カメラ -->
+      <a-entity position="0 1 10" rotation="0 0 0">
+        <a-camera position="0 0 0"></a-camera>
+      </a-entity>
+
+      <!-- テキスト表示 -->
+      <a-text
+        id="txt"
+        value="Move controllers!!"
+        position="0 -2 -2"
+        scale="2 2 2"
+        align="center"
+        color="#AA00FF"
+      ></a-text>
+    </a-scene>
+  </body>
+</html>
