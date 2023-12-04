@@ -89,13 +89,6 @@
 
   <body>
     <a-scene physics="driver: ammo; debug: false;  ">
-      <a-entity
-          gltf-model="url(pin.glb)" 
-          position="0 0 5"
-         rotation="90 0 0"
-         ammo-body="type: dynamic"
-         scale="1 1 1">
-      </a-box>
       <a-box
         ammo-body="type: static"
         ammo-shape="type: box"
@@ -109,6 +102,13 @@
         src="back.png"
       >
       </a-box>
+      <a-entity
+          gltf-model="url(pin.glb)" 
+          position="0 0 5"
+         rotation="90 0 0"
+         ammo-body="type: dynamic"
+         scale="1 1 1">
+      </a-entity>
 
 
       <a-entity id="cameraRig">
