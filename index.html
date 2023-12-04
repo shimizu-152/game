@@ -89,18 +89,14 @@
 
   <body>
     <a-scene physics="driver: ammo; debug: false;  ">
-      <a-box
+      <a-plane
         ammo-body="type: static"
         ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="0 -1.5 0"
+        position="0 0 0"
         rotation="-90 0 0"
-        width="10"
-        height="18"
-        depth="1"
-        color="#80807a"
-        src="back.png"
-      >
+        scale="7 5 1"
+        color="#fff"
+      ></a-plane>
         <a-entity
           gltf-model="url(pin.glb)" 
           position="0 0 5"
