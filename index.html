@@ -101,13 +101,14 @@
         color="#80807a"
         src="back.png"
       >
-        <a-cylinder
-          gltf-model="url(pin.glb)" 
-          position="0 0 5"
-          rotation="90 0 0"
-          ammo-body="type: dynamic"
-          scale="1 1 1">
-      </a-cylinder>
+       <a-cylinder
+        gltf-model = "pin.glb"
+        ammo-body="type: dynamic; emitCollisionEvents: true;"
+        ammo-shape="type: cylinder; offset: 0 1.8 0"
+        position="-0.5 4 -0.5"
+        radius="0.1" 
+        height="3"
+      ></a-cylinder>
       </a-box>
 
 
