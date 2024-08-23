@@ -1,191 +1,72 @@
 <!DOCTYPE html>
 <html>
-  <!--https://github.com/TakashiYoshinaga/Oculus-Quest-Interaction-Sample-->
   <head>
-    <meta charset="utf-8" />
-    <title>racket ball Demo</title>
-    <meta name="description" content="Oculus Quest Demo" />
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.8thwall.com/web/aframe/ammo.wasm.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+    <meta charset="utf-8">
+    <title>VR Road for Kids</title>
+    <meta name="description" content="Cute VR Road for Kids - A-Frame">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   </head>
-  <script>
-    AFRAME.registerComponent("ammo-restitution", {
-      schema: { default: 0.9 },
-      init() {
-        const el = this.el;
-        const restitution = this.data; //引数
-        el.addEventListener("body-loaded", function () {
-          el.body.setRestitution(restitution);
-        });
-      }
-    });
-
-    AFRAME.registerComponent("input-listen", {
-      init: function () {
-        //Called when trigger of ctrlL is pressed
-        this.el.addEventListener("triggerdown", function (e) {
-          let txt = document.getElementById("txt");
-          //txt.setAttribute("value", "triggerdown");
-
-          //Aqurire all ball entities which are instantiated in a-scene
-          var els = document.querySelectorAll(".ball");
-
-          //Destroy all ball entities
-          for (var i = 0; i < els.length; i++) {
-            els[i].parentNode.removeChild(els[i]);
-          }
-
-          //"this" reffers ctlL in this function
-          var point = new THREE.Vector3();
-          this.object3D.getWorldPosition(point);
-
-          //Creating ball entity.
-          var ball = document.createElement("a-sphere");
-          ball.setAttribute(
-            "ammo-body",
-            "type: dynamic; mass:4; gravity: 0 -4 0"
-          );
-          ball.setAttribute("ammo-shape", "type: sphere");
-          //ball.setAttribute("ammo-restitution", "0.9");　効かない
-          ball.setAttribute("class", "ball");
-          ball.setAttribute("radius", "0.2");
-          ball.setAttribute("scale", "1 1 1");
-          ball.setAttribute("position", point);
-          ball.setAttribute("color", "#FF0000");
-
-          //Getting raycaster which was attached to ctrlL
-          var dir = this.getAttribute("raycaster").direction;
-
-          //Setting shoot dierction and speed
-          var force = new THREE.Vector3(dir.x, dir.y, dir.z);
-          force.multiplyScalar(100);
-          ball.force = this.object3D.localToWorld(force);
-
-          //Instantiate ball entity in a-scene
-          var scene = document.querySelector("a-scene");
-          scene.appendChild(ball);
-
-          //shoot "ball" after physics information getting ready.
-          ball.addEventListener("body-loaded", function (e) {
-            //"this" reffers ball entity in this function
-            //txt.setAttribute("value", "body-loaded");
-
-            this.body.setRestitution(0.9); //必要！
-
-            var p = this.object3D.position;
-            //this.velocity was calculated before this function is called.
-            var f = this.force;
-
-            let af = new Ammo.btVector3(f.x, f.y, f.z);
-            this.body.applyCentralImpulse(af);
-          });
-        });
-      },
-      //called evry frame.
-      tick: function () {}
-    });
-  </script>
-
   <body>
-    <a-scene physics="driver: ammo; debug: true;  ">
-       <a-box
-        ammo-body="type: static"
-        ammo-shape="type: box"
-        ammo-restitution="0.9"
-        position="0 -1.5 0"
-        rotation="-90 0 0"
-        width="10"
-        height="18"
-        depth="1"
-        color="#80807a"
-        src="back.png"
-      >
-       
-       <a-cylinder
-        gltf-model = "pin13.glb"
-        ammo-body="type: dynamic; emitCollisionEvents: true;"
-        ammo-shape="type: cylinder; offset: 0 1.8 0"
-        position="0 2 4"
-        rotation="-90 0 0"
-        radius="0.6" 
-        height="2"
-      ></a-cylinder>
+    <a-scene>
+      <!-- Ground (Road) -->
+      <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="100" color="#8B8B8B"></a-plane>
 
-         <a-cylinder
-        gltf-model = "pin.glb"
-        ammo-body="type: dynamic; emitCollisionEvents: true;"
-        ammo-shape="type: cylinder; offset: 0 1.8 0"
-        position="-4 2 4"
-        rotation="-90 0 0"
-        radius="0.6" 
-        height="2"
-      ></a-cylinder>
-         
-        <a-cylinder
-        gltf-model = "pin2.glb"
-        ammo-body="type: dynamic; emitCollisionEvents: true;"
-        ammo-shape="type: cylinder; offset: 0 1.8 0"
-        position="0 1 4"
-        rotation="-90 0 0"
-        radius="0.6" 
-        height="2"
-      ></a-cylinder>
+      <!-- Lane Markings (More) -->
+      <a-plane position="0 0.01 -5" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -10" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -15" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -20" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -25" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -30" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -35" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -40" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -45" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -50" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -55" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -60" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -65" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -70" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -75" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -80" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -85" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
+      <a-plane position="0 0.01 -90" rotation="-90 0 0" width="0.2" height="5" color="#FFFFFF"></a-plane>
 
-         <a-cylinder
-        gltf-model = "pin3.glb"
-        ammo-body="type: dynamic; emitCollisionEvents: true;"
-        ammo-shape="type: cylinder; offset: 0 1.8 0"
-        position="-1 -1 4"
-        rotation="-90 0 0"
-        radius="0.6" 
-        height="2"
-      ></a-cylinder>
-         
-      </a-box>
+      <!-- Cute Buildings -->
+      <a-box position="-7 1 -10" width="2" height="2" depth="2" color="#FFC0CB"></a-box>
+      <a-box position="7 1 -10" width="2" height="2" depth="2" color="#FFD700"></a-box>
 
-     
+      <!-- Replacing Green Box with Orangehouse GLB Model -->
+      <a-entity
+        gltf-model="orangehouse.glb"
+        position="7 1 -20"
+        scale="2 2 2"
+      ></a-entity>
 
+      <!-- More Houses -->
+      <a-box position="-7 1 -5" width="2" height="2" depth="2" color="#FF6347"></a-box>
+      <a-box position="-7 1 -15" width="2" height="2" depth="2" color="#FF4500"></a-box>
+      <a-box position="7 1 -15" width="2" height="2" depth="2" color="#00FA9A"></a-box>
+      <a-box position="-7 1 -25" width="2" height="2" depth="2" color="#FFD700"></a-box>
+      <a-box position="7 1 -25" width="2" height="2" depth="2" color="#1E90FF"></a-box>
+      <a-box position="-7 1 -35" width="2" height="2" depth="2" color="#8A2BE2"></a-box>
+      <a-box position="7 1 -35" width="2" height="2" depth="2" color="#FF69B4"></a-box>
 
+      <!-- Trees -->
+      <a-cone position="-7 0 -15" radius-bottom="1" radius-top="0.5" height="2" color="#228B22"></a-cone>
+      <a-cone position="7 0 -15" radius-bottom="1" radius-top="0.5" height="2" color="#228B22"></a-cone>
+      <a-cone position="-7 0 -25" radius-bottom="1" radius-top="0.5" height="2" color="#228B22"></a-cone>
+      <a-cone position="7 0 -25" radius-bottom="1" radius-top="0.5" height="2" color="#228B22"></a-cone>
 
-      <a-entity id="cameraRig">
-        <a-entity
-          id="head"
-          camera
-          wasd-controls
-          look-controls
-          position="0 1.8 10"
-        >
-        </a-entity>
+      <!-- Sidewalk -->
+      <a-plane position="-5 0.01 0" rotation="-90 0 0" width="2" height="100" color="#C0C0C0"></a-plane>
+      <a-plane position="5 0.01 0" rotation="-90 0 0" width="2" height="100" color="#C0C0C0"></a-plane>
 
-        <a-entity
-          id="ctlL"
-          raycaster="objects: .collidable; far:4;"
-          oculus-touch-controls="hand: left"
-          input-listen
-        >
-          <a-sphere
-            radius="0.01"
-            position="0 0 -1.2"
-            color="#FFFFFF"
-          ></a-sphere>
-          <a-text
-            id="txt"
-            value="Press ctrlL trigger!"
-            position="0 0 -1.3"
-            scale="0.3 0.3 0.3"
-            align="center"
-            color="#0000FF"
-          ></a-text>
-        </a-entity>
+      <!-- Sky -->
+      <a-sky color="#87CEEB"></a-sky>
 
-        <a-entity
-          id="ctlR"
-          raycaster="objects: .collidable; far:4;"
-          oculus-touch-controls="hand: right"
-        >
-     
-        </a-entity>
+      <!-- Camera and Controls (Pedestrian view) -->
+      <a-entity camera position="5 0.5 0" look-controls>
+        <a-entity wasd-controls></a-entity>
       </a-entity>
     </a-scene>
   </body>
